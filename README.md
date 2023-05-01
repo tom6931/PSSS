@@ -87,16 +87,37 @@ Much more!
 
 ElasticBLAST is a cloud native application that runs the command-line BLAST+ executables for you in the cloud.  It can bring up multiple instances to run a large nubmer of searches quickly for you, and it handles a lot of the complexity of running BLAST on the cloud for you.  This includes bringing up instances and populating them with the BLAST databases and the BLAST sofware, scheduling the seaches, and deallocating the resources when the work is done.
 
-ElasticBLAST can be used for the alignment portions of your work, so we discuss here how to do that. 
+ElasticBLAST can search an NCBI provided database or one that you provide.  
+
+ElasticBLAST can be used for the alignment portions of your work, so we discuss use of ElasticBLAST first.
+
+First, you need to install and enable it:
 
 ```
-elastic-blast submit --query s3://elasticblast-USERNAME/queries/{}.fa --db s3://elasticblast-USERNAME/custom_blastdb/TOBG_NP-110.fna --program blastn --num-nodes 2 --results s3://elasticblast-USERNAME/results/ -task megablast -word_size 28 -evalue 0.00001 -max_target_seqs 10000000  -perc_identity 97 -outfmt "6 std qlen slen qcovs"
+[ -d .elb-venv ] && rm -fr .elb-venv
+python3 -m venv .elb-venv
+source .elb-venv/bin/activate
+pip install wheel
+pip install elastic-blast==1.0.0
+```
+Below is a command that runs an ElasticBLAST search of your query (QUERY.fa) against a database.  Both the query and the database have been staged on your buckets (s3://elasticblast-USERNAME/).  You will need to substitute your real bucket name and replace QUERY wiht the real text in QUERY.fa (in two places).
+
+```
+elastic-blast submit --query s3://elasticblast-USERNAME/queries/QUERY.fa --db s3://elasticblast-USERNAME/custom_blastdb/TOBG_NP-110.fna --program blastn --num-nodes 1 --results s3://elasticblast-USERNAME/results/QUERY/ -task megablast -word_size 28 -evalue 0.00001 -max_target_seqs 10000000  -perc_identity 97 -outfmt "6 std qlen slen qcovs"
 ```
 
 You may monitor the results by running:
 ```
-elastic-blast status --results 
+elastic-blast status --results s3://elasticblast-USERNAME/results/QUERY/ 
 ```
+
+When elastic-blast reports that all batches have finished, you can retrieve resutls with the command below.
+
+```
+export YOUR_RESULTS_BUCKET=$MYURL/results/results_parallel/output_SRR5506583
+aws s3 cp ${YOUR_RESULTS_BUCKET}/ . --exclude "*" --include "*.out.gz" --recursive
+```
+
 
 
 
