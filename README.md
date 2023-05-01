@@ -67,12 +67,38 @@ You can filter out results below a given containment score with a simple awk com
 cat matches.csv | awk -F , '{ if ($2 > "0.99") print $0}' > extract.csv
 ```
 
+# Next steps
+Once you have the SRA reads you can try a few things:
+
+1. Explore the metadata for the reads you have identified.  This can tell you about blah, blah, blah.
+2. Align your query sequence(s) against the JGI contigs for your reads.
+3. Align the JGI contigs for your reads against a BLAST database 
+3. Find conserved domains on the JGI contigs for your reads.
+
+For the metadata exploration, you can use AWS Athena.  You can use ElasticBLAST for other three.
 
 
+# Metadata
+Now that you have the matching reads from your guqery, you can explore the metadata for your reads with AWS Athena.
 
- 
+Much more!
 
-# workflow
+# Aligning with ElasticBLAST
+
+ElasticBLAST is a cloud native application that runs the command-line BLAST+ executables for you in the cloud.  It can bring up multiple instances to run a large nubmer of searches quickly for you, and it handles a lot of the complexity of running BLAST on the cloud for you.  This includes bringing up instances and populating them with the BLAST databases and the BLAST sofware, scheduling the seaches, and deallocating the resources when the work is done.
+
+ElasticBLAST can be used for the alignment portions of your work, so we discuss here how to do that. 
+
+```
+elastic-blast submit --query s3://elasticblast-USERNAME/queries/{}.fa --db s3://elasticblast-USERNAME/custom_blastdb/TOBG_NP-110.fna --program blastn --num-nodes 2 --results s3://elasticblast-USERNAME/results/ -task megablast -word_size 28 -evalue 0.00001 -max_target_seqs 10000000  -perc_identity 97 -outfmt "6 std qlen slen qcovs"
+```
+
+You may monitor the results by running:
+```
+elastic-blast status --results 
+```
+
+
 
 
 
