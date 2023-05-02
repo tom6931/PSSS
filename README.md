@@ -8,9 +8,9 @@ This document describes the tools and steps in the workflow for this hackathon t
 
 For this hackathon we’ve set up an EC2 instance in AWS for each participant.
 
-Each user’s instance has 200G of storage in /home/ubuntu
+Each user’s instance has 194G of storage in /home/ubuntu
 
-Each user’s instance also has 237GB of SSD in /home/ubuntu/nvme_ssd
+Each user’s instance also has 217GB of SSD in /home/ubuntu/nvme_ssd
 
 You will also have an S3 bucket set up for you. These buckets can persist once the computing instances are shut down.
 
@@ -103,7 +103,9 @@ ElasticBLAST is a cloud native application that runs the command-line BLAST+ exe
 
 ElasticBLAST can search an NCBI provided database or one that you provide.  
 
-The section below presents a quick overview of ElasticBLAST that is required for the hackathon.  The full ElasticBLAST documentation is [here](https://blast.ncbi.nlm.nih.gov/doc/elastic-blast/elasticblast.html). 
+We describe how to run ElasticBLAST in a couple of different modes.  The full ElasticBLAST documentation is [here](https://blast.ncbi.nlm.nih.gov/doc/elastic-blast/elasticblast.html). 
+
+## Running BLASTN (DNA-DNA)
 
 First, you need to install and enable ElasticBLAST:
 
@@ -140,6 +142,14 @@ gunzip -c batch*virus*.gz | awk '{if($4 > 100) print $0}'
 
 The search above used an NCBI provided database.  You can also upload your own database to a cloud bucket and use that.  Instructions are [here](https://blast.ncbi.nlm.nih.gov/doc/elastic-blast/configuration.html#blast-database).
 
+## Running RPSTBLASTN (protein domains with DNA query)
+
+ElasticBLAST can also run the RPSTBLASTN program which translates a query in six frames and performs a profile search against the Conserved Domain Database ([CDD](https://www.ncbi.nlm.nih.gov/Structure/cdd/cdd.shtml)).  The command below performs this search on the same set of contigs as above:
+
+```
+elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db cdd --program rpstblastn --num-nodes 1 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen"
+```
+When elastic-blast reports that all batches have finished, you can retrieve results with a command similar to the one given above for the BLASTN search.
 
 
 
