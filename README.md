@@ -4,6 +4,16 @@ The Department of Energy Joint Genome Institute (DOE JGI) and National Center fo
 
 This document describes the tools and steps in the workflow for this hackathon team.
 
+# Computing and Storage
+
+For this hackathon we’ve set up an EC2 instance in AWS for each participant.
+
+Each user’s instance has 200G of storage in /home/ubuntu
+
+Each user’s instance also has 237GB of SSD in /home/ubuntu/nvme_ssd
+
+You will also have an S3 bucket set up for you. These buckets can persist once the computing instances are shut down.
+
 # Searching the Sequence Read Archive (SRA).
 
 SRA is big with more than 36 PB of data.  Tools such as PebbleScout and SourMash use kmers in a query to select SRA runs that might be of interest. These programs do not return alignments but instead a ranked list of matches that can be further explored.  
@@ -11,7 +21,7 @@ SRA is big with more than 36 PB of data.  Tools such as PebbleScout and SourMash
 We describe how to run Pebblescout and SourMash.  Pebblescout requires a query that is at least 42 bases long.  SourMash requires one of more genomes of at least 10,000 bases as a query (https://dib-lab.github.io/2022-paper-branchwater-software/)
 
 ## Pebblescout
-We will use this [page](https://pebblescout.ncbi.nlm.nih.gov/) to search SRA with Pebblescout.  Pebblescout can run in three differnet modes that are Profile, Summary, and Detailed.  Here, we discuss the Summary mode.  An input file can be uploaded to this page or it can be pasted into a text box.  Results can be viewed on this page or a TSV file downloaded.  The fields in the TSV file are described in the Pebblescout [documentation](https://pebblescout.ncbi.nlm.nih.gov/?view=doc).  The TSV file has one line per read identified and three scores are included in that line: raw score, percent coverage, and the Pebblescout score.  The percent coverage and the Pebblescout score (a normalized score) are probably the most interesting for this work.  
+We will use this [page](https://pebblescout.ncbi.nlm.nih.gov/) to search SRA with Pebblescout.  Pebblescout can run in three differnet modes that are Profile, Summary, and Detailed.  Here, we discuss the Summary mode.  An input file can be uploaded to this page or it can be pasted into a text box.  Results can be viewed on this page or a TSV file downloaded.  The fields in the TSV file are described in the Pebblescout [documentation](https://pebblescout.ncbi.nlm.nih.gov/?view=doc).  The TSV file has one line per accession identified and three scores are included in that line: raw score, percent coverage, and the Pebblescout score.  The percent coverage and the Pebblescout score (a normalized score) are probably the most interesting for this work.  
 
 Pebblescout output (truncated) for NC_003715.1:1330-2928:
 
@@ -49,7 +59,7 @@ chmod +x mastiff
 ./mastiff -o matches.csv  TOBG_NP-110.fna
 ```
 
-You can check the results of the mathces with:
+You can check the results of the matches with:
 
 ```
 cat matches.csv | more
@@ -82,6 +92,10 @@ For the metadata exploration, you can use AWS Athena.  You can use ElasticBLAST 
 Now that you have the matching reads from your query, you can explore the metadata for your reads with AWS Athena.
 
 Much more!
+
+# Obtaining the contigs for a SRA accessions
+
+Pebblescout and Sourmash return a list of accessions and scores for how well those accessions matched the query.  The JGI has assembled contigs based on SRA reads.  These contigs can be used to better understand the contents of the SRA runs through alignments.
 
 # Aligning with ElasticBLAST
 
