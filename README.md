@@ -1,19 +1,19 @@
 # PSSS
 
-The Department of Energy Joint Genome Institute (DOE JGI) and National Center for Biotechnology Information (NCBI) are collaborating to sponsor a team at the BioIT hackathon in Boston on May 15-16.  Participants will interrogate SRA using appropriate tools (Pebblescout and SourMash) to identify reads of interest.  They can then explore these results by examining metadata of the reads, aligning pre-assembled contigs with BLAST, and identifying conserved domains on the contigs.
+The Department of Energy Joint Genome Institute (DOE JGI) and National Center for Biotechnology Information (NCBI) are collaborating to sponsor a team at the BioIT hackathon in Boston on May 15-16.  Participants will interrogate SRA using appropriate tools (Pebblescout and SourMash) to identify reads of interest.  They can then explore these results by examining metadata of the reads, aligning pre-assembled contigs with BLAST, and identifying conserved domains on the contigs.  Read an overview of this project [here](https://github.com/ncbi/PSSS-Bytes2Biology/wiki).
 
-This documents describes the tools and steps in the workflow for this hackathon team.
+This document describes the tools and steps in the workflow for this hackathon team.
 
 # Searching the Sequence Read Archive (SRA).
 
-SRA is big wih close to 18 PB of data.  Tools such as PebbleScout and SourMash match kmers found in a query to kmers in SRA to select SRA runs that might be of interest. These programs do not return alignments but instead a ranked list of matches that can be further explored.  
+SRA is big with more than 36 PB of data.  Tools such as PebbleScout and SourMash use kmers in a query to select SRA runs that might be of interest. These programs do not return alignments but instead a ranked list of matches that can be further explored.  
 
 We describe how to run Pebblescout and SourMash.  Pebblescout is best at ??? and SourMash is good at ???
 
 ## Pebblescout
-We will use this [page](https://pebblescout.ncbi.nlm.nih.gov/) to search SRA with Pebblescout.  Pebblescout can run in three differnet modes that are Profile, Summary, and Detailed.  Here, we discuss the Summary mode.  An input file can be uploaded to this page or it can be pasted into a text box.  Results can be viewed on this page or a TSV file downloaded.  The fields in the TSV file are described in the Pebblescout [documentation](https://pebblescout.ncbi.nlm.nih.gov/?view=doc).  The TSV file has one line per read identified and three scores are included in that line: raw score, percent coverage, and the Pebblescout score.  The percent coverage and the pebblescout score (a normalized score) are probably the most interesting for this work.  
+We will use this [page](https://pebblescout.ncbi.nlm.nih.gov/) to search SRA with Pebblescout.  Pebblescout can run in three differnet modes that are Profile, Summary, and Detailed.  Here, we discuss the Summary mode.  An input file can be uploaded to this page or it can be pasted into a text box.  Results can be viewed on this page or a TSV file downloaded.  The fields in the TSV file are described in the Pebblescout [documentation](https://pebblescout.ncbi.nlm.nih.gov/?view=doc).  The TSV file has one line per read identified and three scores are included in that line: raw score, percent coverage, and the Pebblescout score.  The percent coverage and the Pebblescout score (a normalized score) are probably the most interesting for this work.  
 
-Example output from Pebblescout is (query was NC_003715.1:1330-2928):
+Pebblescout output (truncated) for NC_003715.1:1330-2928:
 
 ```
 QueryID	SubjectID	RawScore	%coverage	PBSscore	BioSample	Title
@@ -79,19 +79,19 @@ For the metadata exploration, you can use AWS Athena.  You can use ElasticBLAST 
 
 
 # Metadata
-Now that you have the matching reads from your guqery, you can explore the metadata for your reads with AWS Athena.
+Now that you have the matching reads from your query, you can explore the metadata for your reads with AWS Athena.
 
 Much more!
 
 # Aligning with ElasticBLAST
 
-ElasticBLAST is a cloud native application that runs the command-line BLAST+ executables for you in the cloud.  It can bring up multiple instances to run a large nubmer of searches quickly for you, and it handles a lot of the complexity of running BLAST on the cloud for you.  This includes bringing up instances and populating them with the BLAST databases and the BLAST sofware, scheduling the seaches, and deallocating the resources when the work is done.
+ElasticBLAST is a cloud native application that runs the command-line BLAST+ executables for you in the cloud.  It can bring up multiple instances to run a large number of searches quickly, and it handles much of the complexity of running BLAST on the cloud.  This includes selecting instance types, starting them, populating them with the BLAST databases and sofware, scheduling the seaches, and deallocating the resources when the work is done.
 
 ElasticBLAST can search an NCBI provided database or one that you provide.  
 
-ElasticBLAST can be used for the alignment portions of your work, so we discuss use of ElasticBLAST first.
+The section below presents a quick overview of ElasticBLAST that is required for the hackathon.  The full ElasticBLAST documentation is [here](https://blast.ncbi.nlm.nih.gov/doc/elastic-blast/elasticblast.html). 
 
-First, you need to install and enable it:
+First, you need to install and enable ElasticBLAST:
 
 ```
 [ -d .elb-venv ] && rm -fr .elb-venv
@@ -100,23 +100,31 @@ source .elb-venv/bin/activate
 pip install wheel
 pip install elastic-blast==1.0.0
 ```
-Below is a command that runs an ElasticBLAST search of your query (QUERY.fa) against a database.  Both the query and the database have been staged on your buckets (s3://elasticblast-USERNAME/).  You will need to substitute your real bucket name and replace QUERY wiht the real text in QUERY.fa (in two places).
+Below is a command that runs an ElasticBLAST search of your query against a database.  The query is already in an S3 bucket and a database provided by the NCBI is used.  You will need to substitute your real results bucket name and replace REPLACEME with your own token (which should be unique for each search).  This command should take less than 10 minutes to run.
 
 ```
-elastic-blast submit --query s3://elasticblast-USERNAME/queries/QUERY.fa --db s3://elasticblast-USERNAME/custom_blastdb/TOBG_NP-110.fna --program blastn --num-nodes 1 --results s3://elasticblast-USERNAME/results/QUERY/ -task megablast -word_size 28 -evalue 0.00001 -max_target_seqs 10000000  -perc_identity 97 -outfmt "6 std qlen slen qcovs"
+elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db ref_viruses_rep_genomes --program blastn --num-nodes 2 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500  -perc_identity 95 -outfmt "6 std qlen slen staxid ssciname"
 ```
 
-You may monitor the results by running:
+This may take a few minutes to return while it submits.  After the submission, you may monitor the results by running:
 ```
-elastic-blast status --results s3://elasticblast-USERNAME/results/QUERY/ 
+elastic-blast status --results s3://elasticblast-USERNAME/results/REPLACEME
 ```
 
 When elastic-blast reports that all batches have finished, you can retrieve resutls with the command below.
 
 ```
-export YOUR_RESULTS_BUCKET=$MYURL/results/results_parallel/output_SRR5506583
+export YOUR_RESULTS_BUCKET=s3://elasticblast-USERNAME/results/REPLACEME/
 aws s3 cp ${YOUR_RESULTS_BUCKET}/ . --exclude "*" --include "*.out.gz" --recursive
 ```
+
+You can filter these results for alignments longer than 100 bases with:
+
+```
+gunzip -c batch*virus*.gz | awk '{if($4 > 100) print $0}'
+```
+
+The search above used an NCBI provided database.  You can also upload your own database to a cloud bucket and use that.  Instructions are [here](https://blast.ncbi.nlm.nih.gov/doc/elastic-blast/configuration.html#blast-database).
 
 
 
