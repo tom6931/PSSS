@@ -89,13 +89,14 @@ For the metadata exploration, you can use AWS Athena.  You can use ElasticBLAST 
 
 
 # Metadata
-Now that you have the matching reads from your query, you can explore the metadata for your reads with AWS Athena.
+The NCBI has deposited metadata for SRA entries into AWS Athena, making it available to the bioinformatics community.  
+You can read about this at https://www.ncbi.nlm.nih.gov/sra/docs/sra-athena/ and https://www.ncbi.nlm.nih.gov/sra/docs/sra-athena-examples/ (FIXME)
 
-Much more!
+JGI contig metadata? (FIXME)
 
 # Obtaining the contigs for a SRA accessions
 
-Pebblescout and Sourmash return a list of accessions and scores for how well those accessions matched the query.  The JGI has assembled contigs based on SRA reads.  These contigs can be used to better understand the contents of the SRA runs through alignments.
+Pebblescout and Sourmash return a list of accessions and scores for how well those accessions matched the query.  The JGI has assembled contigs based on SRA reads.  These contigs can be used to better understand the contents of the SRA runs through alignments.  FIXME
 
 # Aligning with ElasticBLAST
 
