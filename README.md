@@ -8,7 +8,7 @@ This document describes the tools and steps in the workflow for this hackathon t
 
 SRA is big with more than 36 PB of data.  Tools such as PebbleScout and SourMash use kmers in a query to select SRA runs that might be of interest. These programs do not return alignments but instead a ranked list of matches that can be further explored.  
 
-We describe how to run Pebblescout and SourMash.  Pebblescout is best at ??? and SourMash is good at ???
+We describe how to run Pebblescout and SourMash.  Pebblescout requires a query that is at least 42 bases long.  SourMash requires one of more genomes of at least 10,000 bases as a query (https://dib-lab.github.io/2022-paper-branchwater-software/)
 
 ## Pebblescout
 We will use this [page](https://pebblescout.ncbi.nlm.nih.gov/) to search SRA with Pebblescout.  Pebblescout can run in three differnet modes that are Profile, Summary, and Detailed.  Here, we discuss the Summary mode.  An input file can be uploaded to this page or it can be pasted into a text box.  Results can be viewed on this page or a TSV file downloaded.  The fields in the TSV file are described in the Pebblescout [documentation](https://pebblescout.ncbi.nlm.nih.gov/?view=doc).  The TSV file has one line per read identified and three scores are included in that line: raw score, percent coverage, and the Pebblescout score.  The percent coverage and the Pebblescout score (a normalized score) are probably the most interesting for this work.  
@@ -41,7 +41,7 @@ cat pebblescout-meta-summary.tsv | awk '{if ($5 > 90.0) print $0}'
 
 ## Sourmash
 
-In order to run SourMash, you will use a client called Mastiff.  Follow the steps below to download the client and then run SourMash.  The client only needs to be downloaded the first time.
+You will use Mastiff for these searches.  Mastiff is a tool in the sourmash suite developed in the lab of C. Titus Brown at UC Davis..  Follow the steps below to download and then run mastiff.  Mastiff only needs to be downloaded the first time.
 
 ```
 curl -o mastiff -L https://github.com/sourmash-bio/mastiff/releases/latest/download/mastiff-client-x86_64-unknown-linux-musl
