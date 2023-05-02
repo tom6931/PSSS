@@ -18,7 +18,7 @@ You will also have an S3 bucket set up for you. These buckets can persist once t
 
 SRA is big with more than 36 PB of data.  Tools such as PebbleScout and SourMash use kmers in a query to select SRA runs that might be of interest. These programs do not return alignments but instead a ranked list of matches that can be further explored.  
 
-We describe how to run Pebblescout and SourMash.  Pebblescout requires a query that is at least 42 bases long.  SourMash requires one of more genomes of at least 10,000 bases as a query (https://dib-lab.github.io/2022-paper-branchwater-software/)
+We describe how to run Pebblescout and SourMash.  Pebblescout requires a query that is at least 42 bases long.  SourMash requires one or more genomes of at least 10,000 bases as a query (https://dib-lab.github.io/2022-paper-branchwater-software/)
 
 ## Pebblescout
 We will use this [page](https://pebblescout.ncbi.nlm.nih.gov/) to search SRA with Pebblescout.  Pebblescout can run in three differnet modes that are Profile, Summary, and Detailed.  Here, we discuss the Summary mode.  An input file can be uploaded to this page or it can be pasted into a text box.  Results can be viewed on this page or a TSV file downloaded.  The fields in the TSV file are described in the Pebblescout [documentation](https://pebblescout.ncbi.nlm.nih.gov/?view=doc).  The TSV file has one line per accession identified and three scores are included in that line: raw score, percent coverage, and the Pebblescout score.  The percent coverage and the Pebblescout score (a normalized score) are probably the most interesting for this work.  
