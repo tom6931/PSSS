@@ -145,10 +145,10 @@ The search above used an NCBI provided database.  You can also upload your own d
 
 ## Running RPSTBLASTN (protein domains with DNA query)
 
-ElasticBLAST can also run the RPSTBLASTN program which translates a query in six frames and performs a profile search against the Conserved Domain Database ([CDD](https://www.ncbi.nlm.nih.gov/Structure/cdd/cdd.shtml)).  The command below performs this search on the same set of contigs as above:
+ElasticBLAST can also run the RPSTBLASTN program which translates a query in six frames and performs a profile search against the Conserved Domain Database ([CDD](https://www.ncbi.nlm.nih.gov/Structure/cdd/cdd.shtml)).  The command below performs this search on the same set of contigs as above.  This search uses 20 instances and should take about 50 minutes.
 
 ```
-elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db cdd --program rpstblastn --num-nodes 1 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen"
+elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db cdd --program rpstblastn --num-nodes 20 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen"
 ```
 When elastic-blast reports that all batches have finished, you can retrieve results with a command similar to the one given above for the BLASTN search.
 
