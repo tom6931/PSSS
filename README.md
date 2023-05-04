@@ -7,14 +7,18 @@ This document describes the tools and steps in the workflow for this hackathon t
 
 # Workflow Overview
 
-This is a high-level rough outline of the workflow for this hackathon team.  The exact steps will depend upon discussions with teh team and the interest of the participants.
+This is a high-level outline of the workflow for this hackathon team.  The exact steps will depend upon discussions with the team and the interest of the participants.  Bullet points with the same indentation are independent of each other.  (FIXME: replace with figure)
+
 
 * Search sequence data against SRA with Pebblescout or SourMash
   * Investigate metadata for the SRA reads identified
+    * Using AWS Athena
+    * Using STAT tool
   * Identify JGI contigs that correspond to your SRA runs
     * Align those contigs with ElasticBLAST against a database
     * Find conserved domains on those contigs with RPSTBLASTN using ElasticBLAST
-    * Download the FASTA for the SRA runs and align that back against the contigs
+    * Examine JGI contig metadata
+  * Download the FASTA for the SRA runs and align that back against the contigs
 
 
 
