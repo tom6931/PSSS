@@ -17,8 +17,8 @@ This is a high-level outline of the workflow for this hackathon team.  The exact
   * Identify JGI contigs that correspond to your SRA runs
     * Align those contigs with ElasticBLAST against a database
     * Find conserved domains on those contigs with RPSTBLASTN using ElasticBLAST
-    * Examine JGI contig metadata
-  * Download the FASTA for the SRA runs and align that back against the contigs
+    * Examine JGI contig metadata (FIXME: does it exist and fits in hackathon etc)
+  * Download the FASTA for the SRA runs and align that back against the contigs (FIXME: could take awhile)
 
 
 
