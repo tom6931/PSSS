@@ -13,12 +13,12 @@ This is a high-level outline of the workflow for this hackathon team.  The exact
 * Search sequence data against SRA with Pebblescout or SourMash
   * Investigate metadata for the SRA reads identified
     * Using AWS Athena
-    * Using STAT tool
   * Identify JGI contigs that correspond to your SRA runs
-    * Align those contigs with ElasticBLAST against a database
+    * Align contigs with ElasticBLAST against a database
     * Find conserved domains on those contigs with RPSTBLASTN using ElasticBLAST
     * Examine JGI contig metadata (FIXME: does it exist and fits in hackathon etc)
-  * Download the FASTA for the SRA runs and align that back against the contigs (FIXME: could take awhile)
+    * Use the GFF file for a contig to explore features on contigs and neighboring genes to the target gene.
+  * Download the FASTA for the SRA runs and align that back against the contigs
 
 
 
@@ -116,6 +116,19 @@ JGI contig metadata? (FIXME)
 
 Pebblescout and Sourmash return a list of accessions and scores for how well those accessions matched the query.  The JGI has assembled contigs based on SRA reads.  These contigs can be used to better understand the contents of the SRA runs through alignments.  
 
+You can find the contigs at : s3://elasticblast-jgiworkshop-394212713216  To list this directory, use:
+
+```
+aws s3 ls s3://elasticblast-jgiworkshop-394212713216
+```
+You should look for the contigs in directories called IMG_DATA, e.g. s3://elasticblast-jgiworkshop-394212713216/R219601/NitDOMTargeteWGA_16/IMG_Data/
+
+To copy contigs from a bucket to your instance, you can use the AWS s3 command.  An example command is:
+
+```
+aws s3 cp s3://elasticblast-jgiworkshop-394212713216/R219601/NitDOMTargeteWGA_16/IMG_Data/ . --recursive 
+```
+
 # Aligning with ElasticBLAST
 
 ElasticBLAST is a cloud native application that runs the command-line BLAST+ executables for you in the cloud.  It can bring up multiple instances to run a large number of searches quickly, and it handles much of the complexity of running BLAST on the cloud.  This includes selecting instance types, starting them, populating them with the BLAST databases and sofware, scheduling the seaches, and deallocating the resources when the work is done.
@@ -167,9 +180,9 @@ The search above used an NCBI provided database.  You can also upload your own d
 ElasticBLAST can also run the RPSTBLASTN program which translates a query in six frames and performs a profile search against the Conserved Domain Database ([CDD](https://www.ncbi.nlm.nih.gov/Structure/cdd/cdd.shtml)).  The command below performs this search on the same set of contigs as above.  This search uses 20 instances and should take about 50 minutes.
 
 ```
-elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db cdd --program rpstblastn --num-nodes 20 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen  stitle"
+elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db cdd --program rpstblastn --num-nodes 20 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen stitle"
 ```
-When elastic-blast reports that all batches have finished, you can retrieve results with a command similar to the one given above for the BLASTN search.  These results are a tabular report with the fields (FIXME) that include title information for the domain
+When elastic-blast reports that all batches have finished, you can retrieve results with a command similar to the one given above for the BLASTN search.  These results are a tabular report with a field that include title information for the domain.
 
 
 
