@@ -21,7 +21,7 @@ SRA is big with more than 36 PB of data.  Tools such as PebbleScout and SourMash
 We describe how to run Pebblescout and SourMash.  Pebblescout requires a query that is at least 42 bases long.  SourMash requires one or more genomes of at least 10,000 bases as a query (https://dib-lab.github.io/2022-paper-branchwater-software/)
 
 ## Pebblescout
-We will use this [page](https://pebblescout.ncbi.nlm.nih.gov/) to search SRA with Pebblescout.  Pebblescout can run in three differnet modes that are Profile, Summary, and Detailed.  Here, we discuss the Summary mode.  An input file can be uploaded to this page or it can be pasted into a text box.  Results can be viewed on this page or a TSV file downloaded.  The fields in the TSV file are described in the Pebblescout [documentation](https://pebblescout.ncbi.nlm.nih.gov/?view=doc).  The TSV file has one line per accession identified and three scores are included in that line: raw score, percent coverage, and the Pebblescout score.  The percent coverage and the Pebblescout score (a normalized score) are probably the most interesting for this work.  
+We will use this [page](https://pebblescout.ncbi.nlm.nih.gov/) to search SRA with Pebblescout.  Pebblescout can run in three different modes that are Profile, Summary, and Detailed.  Here, we discuss the Summary mode.  An input file can be uploaded to this page or it can be pasted into a text box.  Results can be viewed on this page or a TSV file downloaded.  The fields in the TSV file are described in the Pebblescout [documentation](https://pebblescout.ncbi.nlm.nih.gov/?view=doc).  The TSV file has one line per accession identified and three scores are included in that line: raw score, percent coverage, and the Pebblescout score.  The percent coverage and the Pebblescout score (a normalized score) are probably the most interesting for this work.  
 
 Pebblescout output (truncated) for NC_003715.1:1330-2928:
 
@@ -96,7 +96,7 @@ JGI contig metadata? (FIXME)
 
 # Obtaining the contigs for a SRA accessions
 
-Pebblescout and Sourmash return a list of accessions and scores for how well those accessions matched the query.  The JGI has assembled contigs based on SRA reads.  These contigs can be used to better understand the contents of the SRA runs through alignments.  FIXME
+Pebblescout and Sourmash return a list of accessions and scores for how well those accessions matched the query.  The JGI has assembled contigs based on SRA reads.  These contigs can be used to better understand the contents of the SRA runs through alignments.  
 
 # Aligning with ElasticBLAST
 
@@ -117,13 +117,13 @@ source .elb-venv/bin/activate
 pip install wheel
 pip install elastic-blast==1.0.0
 ```
-Below is a command that runs an ElasticBLAST search of your query against a database.  The query is already in an S3 bucket and a database provided by the NCBI is used.  You will need to substitute your real results bucket name and replace REPLACEME with your own token (which should be unique for each search).  This command should take less than 10 minutes to run.
+Below is a command that runs an ElasticBLAST search of your query against a database.  The query is already in an S3 bucket and an NCBI database is used.  You will need to substitute your real results bucket name and replace REPLACEME with your own token (which should be unique for each search).  This search should take less than 10 minutes.
 
 ```
 elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db ref_viruses_rep_genomes --program blastn --num-nodes 2 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500  -perc_identity 95 -outfmt "6 std qlen slen staxid ssciname"
 ```
 
-This may take a few minutes to return while it submits.  After the submission, you may monitor the results by running:
+This command will take a few minutes to return while it submits.  After it returns, you may monitor the results by running:
 ```
 elastic-blast status --results s3://elasticblast-USERNAME/results/REPLACEME
 ```
@@ -134,6 +134,7 @@ When elastic-blast reports that all batches have finished, you can retrieve resu
 export YOUR_RESULTS_BUCKET=s3://elasticblast-USERNAME/results/REPLACEME/
 aws s3 cp ${YOUR_RESULTS_BUCKET}/ . --exclude "*" --include "*.out.gz" --recursive
 ```
+hese results are a tabular report with the fields (FIXME)
 
 You can filter these results for alignments longer than 100 bases with:
 
@@ -148,9 +149,9 @@ The search above used an NCBI provided database.  You can also upload your own d
 ElasticBLAST can also run the RPSTBLASTN program which translates a query in six frames and performs a profile search against the Conserved Domain Database ([CDD](https://www.ncbi.nlm.nih.gov/Structure/cdd/cdd.shtml)).  The command below performs this search on the same set of contigs as above.  This search uses 20 instances and should take about 50 minutes.
 
 ```
-elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db cdd --program rpstblastn --num-nodes 20 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen"
+elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db cdd --program rpstblastn --num-nodes 20 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen  stitle"
 ```
-When elastic-blast reports that all batches have finished, you can retrieve results with a command similar to the one given above for the BLASTN search.
+When elastic-blast reports that all batches have finished, you can retrieve results with a command similar to the one given above for the BLASTN search.  These results are a tabular report with the fields (FIXME) that include title information for the domain
 
 
 
