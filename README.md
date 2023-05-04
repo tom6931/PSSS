@@ -1,8 +1,22 @@
 # PSSS
 
-The Department of Energy Joint Genome Institute (DOE JGI) and National Center for Biotechnology Information (NCBI) are collaborating to sponsor a team at the BioIT hackathon in Boston on May 15-16.  Participants will interrogate SRA using appropriate tools (Pebblescout and SourMash) to identify reads of interest.  They can then explore these results by examining metadata of the reads, aligning pre-assembled contigs with BLAST, and identifying conserved domains on the contigs.  Read an overview of this project [here](https://github.com/ncbi/PSSS-Bytes2Biology/wiki).
+The Department of Energy Joint Genome Institute ([DOE JGI](https://jgi.doe.gov/)) and National Center for Biotechnology Information ([NCBI](https://www.ncbi.nlm.nih.gov/)) are collaborating to sponsor a team at the [BioIT hackathon](https://www.bio-itworldexpo.com/fair-data-hackathon) in Boston on May 15-16.  Participants will interrogate SRA using appropriate tools (Pebblescout and SourMash) to identify reads of interest.  They can then explore these results by examining metadata of the reads, aligning pre-assembled contigs with BLAST, and identifying conserved domains on the contigs.  Read an overview of this project [here](https://github.com/ncbi/PSSS-Bytes2Biology/wiki).
+
 
 This document describes the tools and steps in the workflow for this hackathon team.
+
+# Workflow Overview
+
+This is a high-level rough outline of the workflow for this hackathon team.  The exact steps will depend upon discussions with teh team and the interest of the participants.
+
+* Search sequence data against SRA with Pebblescout or SourMash
+  * Investigate metadata for the SRA reads identified
+  * Identify JGI contigs that correspond to your SRA runs
+    * Align those contigs with ElasticBLAST against a database
+    * Find conserved domains on those contigs with RPSTBLASTN using ElasticBLAST
+    * Download the FASTA for the SRA runs and align that back against the contigs
+
+
 
 # Computing and Storage
 
