@@ -199,7 +199,7 @@ You can also use ElasticBLAST to align the SRA reads corresponding to a contig b
 
 There are a few steps here.  First, you need to download the contigs to your instance and make a BLAST database out of them. Second, you upload that database to a cloud bucket. Next, you can run ElasticBLAST using the pre-formatted FASTA for the SRA accession matching the contigs. 
 
-The examples below use the ETNvirmetaSPAdes_5 and the corresponding SRA accession.  You will need to substitute the contigs and SRA accession you want to align as well as the path to your own S3 bucket.
+The examples below use the ETNvirmetaSPAdes_5 contigs and the corresponding SRA accession.  You will need to substitute the contigs and SRA accession you want to align as well as the path to your own S3 bucket.
 
 To download the contigs, make a BLAST database, and upload them to a cloud bucket, you should run these steps:
 
@@ -215,7 +215,7 @@ You can then align the SRA reads against the contigs with this command:
 elastic-blast submit --query s3://FIXME --db s3://elasticblast-USERNAME/DB/ETNvirmetaSPAdes_5/184068.assembled --program blastn --num-nodes 2 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500  -perc_identity 95 -outfmt "6 std qlen slen"
 ```
 
-
+Copy the results from the bucket to your instance using the same procedure as above.
 
 
 
