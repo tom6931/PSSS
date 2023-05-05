@@ -206,13 +206,34 @@ To download the contigs, make a BLAST database, and upload them to a cloud bucke
 ```
 aws s3 cp s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna .
 makeblastdb -in 184068.assembled.fna -parse_seqids -title "ETNvirmetaSPAdes_5 contigs (184068)" -dbtype nucl -out 184068.assembled
-aws s3 cp 184068.assembled.* s3://elasticblast-USERNAME/DB/ETNvirmetaSPAdes_5/
+aws s3 cp 184068.assembled.n* s3://elasticblast-USERNAME/DB/ETNvirmetaSPAdes_5/
 ```
 
 You can then align the SRA reads against the contigs with this command:
 
 ```
 elastic-blast submit --query s3://FIXME --db s3://elasticblast-USERNAME/DB/ETNvirmetaSPAdes_5/184068.assembled --program blastn --num-nodes 2 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500  -perc_identity 95 -outfmt "6 std qlen slen"
+```
+
+Copy the results from the bucket to your instance using the same procedure as above.
+
+## Aligning reads to your query
+
+You can also use ElasticBLAST to align the SRA reads back to the query (that was used with SourMash or Pebblescout).  This will allow you to calculate the query coverage from the reads as well as calculate what percentage of the reads aligned to the query.
+
+There are a few steps here.  First, you need to make a BLAST database out of your query. Second, you upload that database to a cloud bucket. Next, you can run ElasticBLAST using the pre-formatted FASTA for the SRA accession that your query identified. 
+
+You can make a database from your query and upload it to a cloud bucket using the commands below.  You will need to substitute your real query name for MYQUERY as well as use your real bucket name.
+
+```
+makeblastdb -in MYQUERY.fna -parse_seqids -title "MYQUERY" -dbtype nucl -out MYQUERY
+aws s3 cp MYQUERY.n* s3://elasticblast-USERNAME/DB/MYQUERY
+```
+
+You can then align the SRA reads against your query with this command (again replacing MYQUERY with your actual query name).
+
+```
+elastic-blast submit --query s3://FIXME --db s3://elasticblast-USERNAME/DB/MYQUERY --program blastn --num-nodes 2 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500  -perc_identity 95 -outfmt "6 std qlen slen"
 ```
 
 Copy the results from the bucket to your instance using the same procedure as above.
