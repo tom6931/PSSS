@@ -16,10 +16,10 @@ This is a high-level outline of the workflow for this hackathon team.  The exact
   * Identify JGI contigs that correspond to your SRA runs
     * Align contigs with ElasticBLAST against a database
     * Find conserved domains on those contigs with RPSTBLASTN using ElasticBLAST
+    * Download the FASTA for the SRA runs and align that back against the contigs
     * Examine JGI contig metadata (FIXME: does it exist and fits in hackathon etc)
     * Use the GFF file for a contig to explore features on contigs and neighboring genes to the target gene.
-  * Download the FASTA for the SRA runs and align that back against the contigs
-
+  
 
 
 # Computing and Storage
@@ -159,13 +159,13 @@ This command will take a few minutes to return while it submits.  After it retur
 elastic-blast status --results s3://elasticblast-USERNAME/results/REPLACEME
 ```
 
-When elastic-blast reports that all batches have finished, you can retrieve resutls with the command below.
+When elastic-blast reports that all batches have finished, you can retrieve results with the command below.
 
 ```
 export YOUR_RESULTS_BUCKET=s3://elasticblast-USERNAME/results/REPLACEME/
 aws s3 cp ${YOUR_RESULTS_BUCKET}/ . --exclude "*" --include "*.out.gz" --recursive
 ```
-hese results are a tabular report with the fields (FIXME)
+These results are a tabular report with the fields (FIXME)
 
 You can filter these results for alignments longer than 100 bases with:
 
@@ -173,7 +173,13 @@ You can filter these results for alignments longer than 100 bases with:
 gunzip -c batch*virus*.gz | awk '{if($4 > 100) print $0}'
 ```
 
-The search above used an NCBI provided database.  You can also upload your own database to a cloud bucket and use that.  Instructions are [here](https://blast.ncbi.nlm.nih.gov/doc/elastic-blast/configuration.html#blast-database).
+The search above used an NCBI provided database.  You can get a listing of all the NCBI provided databases by running:
+
+```
+update_blastdb.pl --source aws --showall pretty
+```
+
+You can also upload your own database to a cloud bucket and use that.  Instructions are [here](https://blast.ncbi.nlm.nih.gov/doc/elastic-blast/configuration.html#blast-database).
 
 ## Running RPSTBLASTN (protein domains with DNA query)
 
@@ -183,6 +189,32 @@ ElasticBLAST can also run the RPSTBLASTN program which translates a query in six
 elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db cdd --program rpstblastn --num-nodes 20 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen stitle"
 ```
 When elastic-blast reports that all batches have finished, you can retrieve results with a command similar to the one given above for the BLASTN search.  These results are a tabular report with a field that include title information for the domain.
+
+## Aligning reads to the JGI contigs
+
+You can also use ElasticBLAST to align the SRA reads corresponding to a contig back to the contig to see how well they align (e.g., how well the contig represents the SRA accession).  This will allow you to answer questions like
+
+* How much of the contig is covered by the reads in the SRA accession.
+* What percentage of the reads are aligned. 
+
+There are a few steps here.  First, you need to download the contigs to your instance and make a BLAST database out of them. Second, you upload that database to a cloud bucket. Next, you can run ElasticBLAST using the pre-formatted FASTA for the SRA accession matching the contigs. 
+
+The examples below use the ETNvirmetaSPAdes_5 and the corresponding SRA accession.  You will need to substitute the contigs and SRA accession you want to align as well as the path to your own S3 bucket.
+
+To download the contigs, make a BLAST database, and upload them to a cloud bucket, you should run these steps:
+
+```
+aws s3 cp s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna .
+makeblastdb -in 184068.assembled.fna -parse_seqids -title "ETNvirmetaSPAdes_5 contigs (184068)" -dbtype nucl -out 184068.assembled
+aws s3 cp 184068.assembled.* s3://elasticblast-USERNAME/DB/ETNvirmetaSPAdes_5/
+```
+
+You can then align the SRA reads against the contigs with this command:
+
+```
+elastic-blast submit --query s3://FIXME --db s3://elasticblast-USERNAME/DB/ETNvirmetaSPAdes_5/184068.assembled --program blastn --num-nodes 2 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500  -perc_identity 95 -outfmt "6 std qlen slen"
+```
+
 
 
 
