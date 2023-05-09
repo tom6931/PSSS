@@ -137,8 +137,6 @@ ElasticBLAST can search an NCBI provided database or one that you provide.
 
 We describe how to run ElasticBLAST in a couple of different modes.  The full ElasticBLAST documentation is [here](https://blast.ncbi.nlm.nih.gov/doc/elastic-blast/elasticblast.html). 
 
-## Running BLASTN (DNA-DNA)
-
 First, you need to install and enable ElasticBLAST:
 
 ```
@@ -148,6 +146,9 @@ source .elb-venv/bin/activate
 pip install wheel
 pip install elastic-blast==1.0.0
 ```
+
+## Running BLASTN (DNA-DNA) 
+
 Below is a command that runs an ElasticBLAST search of your query against a database.  The query is already in an S3 bucket and an NCBI database is used.  You will need to substitute your real results bucket name and replace REPLACEME with your own token (which should be unique for each search).  This search should take less than 10 minutes.
 
 ```
