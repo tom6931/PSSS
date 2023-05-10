@@ -16,11 +16,9 @@ This is a high-level outline of the workflow for this hackathon team.  The exact
   * Identify JGI contigs that correspond to your SRA runs
     * Align contigs with ElasticBLAST against a database
     * Find conserved domains on those contigs with RPSTBLASTN using ElasticBLAST
-    * Download the FASTA for the SRA runs and align that back against the contigs
-    * Examine JGI contig metadata (FIXME: does it exist and fits in hackathon etc)
+    * Download the FASTA for the SRA runs and align that back against the contig.
     * Use the GFF file for a contig to explore features on contigs and neighboring genes to the target gene.
   
-
 
 # Computing and Storage
 
@@ -108,9 +106,8 @@ For the metadata exploration, you can use AWS Athena.  You can use ElasticBLAST 
 
 # Metadata
 The NCBI has deposited metadata for SRA entries into AWS Athena, making it available to the bioinformatics community.  
-You can read about this at https://www.ncbi.nlm.nih.gov/sra/docs/sra-athena/ and https://www.ncbi.nlm.nih.gov/sra/docs/sra-athena-examples/ (FIXME)
+You can read about this at https://www.ncbi.nlm.nih.gov/sra/docs/sra-athena/ and https://www.ncbi.nlm.nih.gov/sra/docs/sra-athena-examples/ 
 
-JGI contig metadata? (FIXME)
 
 # Obtaining the contigs for a SRA accessions
 
@@ -166,7 +163,6 @@ When elastic-blast reports that all batches have finished, you can retrieve resu
 export YOUR_RESULTS_BUCKET=s3://elasticblast-USERNAME/results/REPLACEME/
 aws s3 cp ${YOUR_RESULTS_BUCKET}/ . --exclude "*" --include "*.out.gz" --recursive
 ```
-These results are a tabular report with the fields (FIXME)
 
 You can filter these results for alignments longer than 100 bases with:
 
