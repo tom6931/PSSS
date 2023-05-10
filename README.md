@@ -149,7 +149,7 @@ pip install elastic-blast==1.0.0
 
 ## Running BLASTN (DNA-DNA) 
 
-Below is a command that runs an ElasticBLAST search of your query against a database.  The query is already in an S3 bucket and an NCBI database is used.  You will need to substitute your real results bucket name and replace REPLACEME with your own token (which should be unique for each search).  This search should take less than 10 minutes.
+Below is a command that runs an ElasticBLAST search of your query against a database.  The query is already in an S3 bucket and an NCBI database is used.  You will need to substitute your real results bucket name and replace REPLACEME with your own token (which should be unique for each search).  This search should take less than 10 minutes.  This command customizes the BLAST output with the -outfmt flag and some custom fields.  You can read more about the -outfmt flag [here](https://www.ncbi.nlm.nih.gov/books/NBK569862/)
 
 ```
 elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db ref_viruses_rep_genomes --program blastn --num-nodes 2 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500  -perc_identity 95 -outfmt "6 std qlen slen staxid ssciname"
@@ -187,9 +187,9 @@ You can also upload your own database to a cloud bucket and use that.  Instructi
 ElasticBLAST can also run the RPSTBLASTN program which translates a query in six frames and performs a profile search against the Conserved Domain Database ([CDD](https://www.ncbi.nlm.nih.gov/Structure/cdd/cdd.shtml)).  The command below performs this search on the same set of contigs as above.  This search uses 20 instances and should take about 50 minutes.
 
 ```
-elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db cdd --program rpstblastn --num-nodes 20 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen stitle"
+elastic-blast submit --query s3://elasticblast-jgiworkshop-394212713216/R219596/ETNvirmetaSPAdes_5/IMG_Data/184068.assembled.fna --db s3://elasticblast-test/db/CDD_TAX/cdd_tax --program rpstblastn --num-nodes 20 --results s3://elasticblast-USERNAME/results/REPLACEME/ -- -evalue 0.00001 -max_target_seqs 500 -outfmt "6 std qlen slen staxid sskingdoms ssciname stitle"
 ```
-When elastic-blast reports that all batches have finished, you can retrieve results with a command similar to the one given above for the BLASTN search.  These results are a tabular report with a field that include title information for the domain.
+When elastic-blast reports that all batches have finished, you can retrieve results with a command similar to the one given above for the BLASTN search.  These results are a tabular report with a field that include taxonomy and title information for the domain.  The taxonomy information here describes where the conserved domain is found taxonomically.  That is, if the sskingdoms is Bacteria and the ssciname is Enterobacteriaceae, then it is found in Enterobacteriaceae.  In some cases, a broad taxonomic range is returned (e.g., the conserved domain is found in bacteria).  A very broad range may also be returned.    
 
 ## Aligning reads to the JGI contigs
 
